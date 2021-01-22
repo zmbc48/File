@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+	</head>
+
+	<body>
+		<canvas id="one" width="500" height="500" style="border:1px solid #000000;">
+			您的浏览器不支持 HTML5 canvas 标签。
+		</canvas>
+		<script>
+			(function() {
+				var divWidth = 500;
+				var divHeight = 500;
+				var n = 12;
+				var cicleDtos = [];
+				//底层圆类
+				function CicleDto(_x, _y, _r, _vx, _vy) {
+					this.x = _x;
+					this.y = _y;
+					this.r = _r;
+					this.vx = _vx;
+					this.vy = _vy;
+				}
+				CicleDto.prototype = {
+					move: function(minx, miny, maxx, maxy) {
+						this.x += this.vx;
+						this.y += this.vy;
+						this.checkCollision(minx, miny, maxx, maxy);
+					},
+					checkCollision: function(minx, miny, maxx, maxy) {
+						if(this.x - this.r < minx) {
+							this.x = this.r;
+							this.vx = -this.vx;
+						}
+
+						if(this.x + this.r >= maxx) {
+							this.x = maxx - this.r;
+							this.vx = -this.vx;
+						}
+
+						if(this.y - this.r < miny) {
+							this.y = this.r;
+							this.vy = -this.vy;
+						}
+						if(this.y + this.r >= maxy) {
+							this.y = maxy - this.r;
+							this.vy = -this.vy;
+						}
+					},
+					toString: function() {
+						return "CicleDto{" +
+							"x=" + this.x +
+							", y=" + this.y +
+							", r=" + this.r +
+							", vx=" + this.vx +
+							", vy=" + this.vy +
+							'}';
+					}
+				}
+
+				//帮助类
+				function AlgoHelps() {}
+				AlgoHelps.prototype = {
+					strokeCilce: function(ctx, x, y, r) {
+						ctx.beginPath();
+						ctx.arc(x, y, r, 0, 2 * Math.PI);
+						ctx.stroke();
+					},
+					fillCilce: function(ctx, x, y, r) {
+						ctx.beginPath();
+						ctx.arc(x, y, r, 0, 2 * Math.PI);
+						ctx.fill();
+					},
+					setColor: function(ctx, color) {
+						ctx.strokeStyle = color;
+					}
+				}
+
+				
+				for(var i = 0; i < n; i++) {
+					var r = 50;
+					var x = parseInt(Math.random() * (divWidth - 2 * r) + r);
+					var y = parseInt(Math.random() * (divHeight - 2 * r) + r);;
+					var vx = parseInt(Math.random() * 21 - 10);
+					var vy = parseInt(Math.random() * 21 - 10);
+					var cicle = new CicleDto(x, y, r, vx, vy);
+
+					cicleDtos.push(cicle);
+				}
+
+				var c = document.getElementById("one");
+				var ctx = c.getContext("2d");
+				var algoHelp = new AlgoHelps();
+				algoHelp.setColor(ctx, "red");
+
+				function myFun(divWidth, divHeight) {
+					ctx.clearRect(0, 0, divWidth, divHeight);
+					for(var i = 0; i < cicleDtos.length; i++) {
+						var cicle = cicleDtos[i];
+						algoHelp.strokeCilce(ctx, cicle.x, cicle.y, cicle.r);
+					}
+					for(var i = 0; i < cicleDtos.length; i++) {
+						var cicle = cicleDtos[i];
+						cicle.move(0, 0, divWidth, divHeight);
+					}
+				}
+				setInterval(function() {
+					myFun(divWidth, divHeight)
+				}, 50); 
+
+			})();
+		</script>
+	</body>
+
+</html>
